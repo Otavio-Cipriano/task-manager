@@ -34,7 +34,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Task deleteById(Long id) {
+        Task task = taskRepository.findById(id).orElseThrow(NoSuchElementException::new);
         taskRepository.deleteById(id);
+        return task;
     }
 }
