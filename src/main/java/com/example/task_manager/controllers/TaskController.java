@@ -4,6 +4,7 @@ import com.example.task_manager.DTO.DeleteTaskDTO;
 import com.example.task_manager.DTO.TaskCreateRequestDTO;
 import com.example.task_manager.DTO.TasksDTO;
 import com.example.task_manager.domain.models.Task;
+import com.example.task_manager.domain.models.TaskState;
 import com.example.task_manager.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -37,10 +38,22 @@ public class TaskController {
         System.out.println(task);
         return ResponseEntity.ok(task);
     }
+    @GetMapping("status/{taskState}")
+    public ResponseEntity<List<TasksDTO>> getTasksByStatus(@PathVariable TaskState taskState){
+        List<TasksDTO> tasks = taskService.getTasksByState(taskState);
+        return ResponseEntity.ok(tasks);
+    }
     @GetMapping
     public ResponseEntity<List<TasksDTO>> getAllTasks(){
         List<TasksDTO> tasks = taskService.getTasks();
         return ResponseEntity.ok(tasks);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody TaskCreateRequestDTO updatedTask){
+        Task newTask =  new Task(updatedTask.title(), updatedTask.description(), updatedTask.state());
+        Task updated = taskService.updateTask(id, newTask);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("{id}")

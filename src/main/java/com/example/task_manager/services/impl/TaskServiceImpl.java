@@ -2,8 +2,10 @@ package com.example.task_manager.services.impl;
 
 import com.example.task_manager.DTO.TasksDTO;
 import com.example.task_manager.domain.models.Task;
+import com.example.task_manager.domain.models.TaskState;
 import com.example.task_manager.domain.repositories.TaskRepository;
 import com.example.task_manager.services.TaskService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,5 +40,23 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(id).orElseThrow(NoSuchElementException::new);
         taskRepository.deleteById(id);
         return task;
+    }
+
+    @Override
+    public List<TasksDTO> getTasksByState(TaskState state) {
+        if (state == null){
+            throw new IllegalArgumentException("No state provided");
+        }
+        return taskRepository.findByState(state);
+    }
+
+    @Override
+    public Task updateTask(Long id, Task updatedTask) {
+        return taskRepository.findById(id).map(existingTask -> {
+            existingTask.setTitle(updatedTask.getTitle());
+            existingTask.setDescription(updatedTask.getDescription());
+            existingTask.setState(updatedTask.getState());
+            return taskRepository.save(existingTask);
+        }).orElseThrow(() -> new EntityNotFoundException("Task não encontrada com id: " + id));
     }
 }

@@ -5,12 +5,21 @@ public enum TaskState {
     INPROGRESS("inprogress"),
     DONE("done");
 
-    private String state;
+    final private String state;
     TaskState(String state) {
-        this.state = state;
+        this.state = state.toLowerCase();
     }
 
     public String getState(){
         return state;
+    }
+
+    public static TaskState fromString(String state) {
+        for (TaskState taskState : TaskState.values()) {
+            if (taskState.getState().equalsIgnoreCase(state)) {
+                return taskState;
+            }
+        }
+        throw new IllegalArgumentException("Invalid status: " + state);
     }
 }
